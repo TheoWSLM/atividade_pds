@@ -4,6 +4,20 @@
 
 ---
 
+## 📥 Como Clonar e Configurar
+
+Para rodar este projeto em qualquer computador, primeiro faça o clone do repositório e acesse a pasta do projeto:
+
+```bash
+# Clone este repositório
+git clone https://github.com/TheoWSLM/atividade_pds.git
+
+# Acesse o diretório do projeto
+cd atividade_pds
+```
+
+---
+
 ## 🚀 Como Executar
 
 ### Pré-requisitos
