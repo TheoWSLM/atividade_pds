@@ -5,7 +5,7 @@ Orquestra a execução de duas transformadas e verifica a corretude
 numérica entre elas.
 """
 
-from ..dominio.protocolo_transformada import ProtocoloTransformada
+from pds.dominio.transformadas.protocolo_transformada import ProtocoloTransformada
 from .resultado_comparacao import ResultadoComparacao
 
 

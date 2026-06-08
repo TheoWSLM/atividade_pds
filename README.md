@@ -88,15 +88,15 @@ Os gráficos são salvos automaticamente em `./resultados/`:
 ## 🏛️ Arquitetura de Camadas
 
 ```
-exercicios/          → Orquestra chamadas às camadas abaixo
+exercicios/                       → Orquestra chamadas às camadas abaixo
     ↓ usa
-pds/analise/         → Compara resultados e gera relatório textual
+pds/analise/transformadas/        → Compara resultados e gera relatório textual
     ↓ usa
-pds/dominio/         → Algoritmos puros (DFT, FFT, Butterfly)
+pds/dominio/transformadas/        → Algoritmos puros (DFT, FFT, Butterfly)
     ↓ produz
-ResultadoTransformada → Dado imutável que flui entre as camadas
+ResultadoTransformada             → Dado imutável que flui entre as camadas
 
-pds/visualizacao/    → Gráficos (PNG) e validação (NumPy) — infraestrutura
+pds/visualizacao/transformadas/   → Gráficos (PNG) e validação (NumPy)
     ↑ consumida diretamente pelos exercícios
 ```
 

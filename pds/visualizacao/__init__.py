@@ -2,8 +2,8 @@
 Pacote de visualização — gráficos e validação numérica.
 """
 
-from .gerador_graficos import GeradorGraficos
-from .validador_numerico import ValidadorNumerico
+from .transformadas.gerador_graficos import GeradorGraficos
+from .transformadas.validador_numerico import ValidadorNumerico
 
 __all__ = [
     "GeradorGraficos",

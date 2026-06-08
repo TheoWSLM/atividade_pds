@@ -9,7 +9,7 @@ import math
 
 from tabulate import tabulate
 
-from .resultado_comparacao import ResultadoComparacao
+from pds.analise.transformadas.resultado_comparacao import ResultadoComparacao
 
 
 class GeradorRelatorio:

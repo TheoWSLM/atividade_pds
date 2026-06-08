@@ -7,7 +7,7 @@ pelo ComparadorAlgoritmos para serem consumidas pelo GeradorRelatorio.
 
 from dataclasses import dataclass
 
-from ..dominio.resultado_transformada import ResultadoTransformada
+from pds.dominio.transformadas.resultado_transformada import ResultadoTransformada
 
 
 @dataclass(frozen=True)
