@@ -42,9 +42,17 @@ $(VENV)/pyvenv.cfg:
 configurar: $(VENV)/pyvenv.cfg ## Cria o virtualenv e instala dependências
 
 # ── Execução ──────────────────────────────────────────────────────────
-executar: configurar ## Executa TODOS os exercícios (3 e 4)
+executar: configurar ## Executa TODOS os exercícios (1, 2, 3 e 4)
 	@echo "$(CIANO)► Executando todos os exercícios...$(RESET)"
 	@$(PYTHON_V) main.py
+
+ex1: configurar ## Executa apenas o Exercício 1 (Janelamento, N=512)
+	@echo "$(CIANO)► Exercício 1: Janelamento e Resolução Espectral...$(RESET)"
+	@$(PYTHON_V) main.py --ex1
+
+ex2: configurar ## Executa apenas o Exercício 2 (Filtro FIR PB, M=60)
+	@echo "$(CIANO)► Exercício 2: Projeto de Filtro FIR Passa-Baixas...$(RESET)"
+	@$(PYTHON_V) main.py --ex2
 
 ex3: configurar ## Executa apenas o Exercício 3 (DFT/FFT, N=4)
 	@echo "$(CIANO)► Exercício 3: DFT e FFT para x[n] = {0,1,2,3}...$(RESET)"

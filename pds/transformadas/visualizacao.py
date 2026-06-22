@@ -1,26 +1,21 @@
 """
-Gerador de gráficos de espectro e comparação de complexidade.
-
-Produz os arquivos PNG de espectro e complexidade.
-Nenhum cálculo matemático ocorre aqui.
+Visualização gráfica e validação numérica para DFT e FFT.
 """
 
 import math
 import os
-
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 
-# Backend não-interativo: gera PNGs sem exigir display gráfico
+# Configurar backend não-interativo do matplotlib
 matplotlib.use("Agg")
 
 
 class GeradorGraficos:
     """
-    Gera gráficos de espectro e comparação de complexidade como arquivos PNG.
-
-    Todos os métodos recebem o diretório de saída por parâmetro,
-    tornando a classe testável sem dependência do sistema de arquivos global.
+    Gera gráficos de espectro de transformada (sinal, magnitude, fase)
+    e gráficos de comparação de complexidade.
     """
 
     PALETA = {
@@ -39,19 +34,7 @@ class GeradorGraficos:
         nome_arquivo: str,
         diretorio_saida: str = "resultados",
     ) -> str:
-        """
-        Gera figura com 3 subplots: sinal, magnitude e fase.
-
-        Args:
-            sequencia:       Sequência de entrada x[n].
-            coeficientes:    Coeficientes espectrais X[k].
-            titulo:          Título da figura.
-            nome_arquivo:    Nome do arquivo (sem extensão).
-            diretorio_saida: Diretório onde o PNG será salvo.
-
-        Returns:
-            Caminho completo do arquivo PNG gerado.
-        """
+        """Gera figura com 3 subplots: sinal, magnitude e fase (escala linear)."""
         os.makedirs(diretorio_saida, exist_ok=True)
 
         tamanho = len(sequencia)
@@ -111,20 +94,7 @@ class GeradorGraficos:
         rotulo_b: str = "FFT — O(N·log₂N)",
         diretorio_saida: str = "resultados",
     ) -> str:
-        """
-        Plota curvas de operações de dois algoritmos em escala log-log.
-
-        Args:
-            tamanhos:      Lista de valores de N.
-            operacoes_a:   Total de operações do algoritmo A para cada N.
-            operacoes_b:   Total de operações do algoritmo B para cada N.
-            rotulo_a:      Legenda da curva A.
-            rotulo_b:      Legenda da curva B.
-            diretorio_saida: Diretório de saída.
-
-        Returns:
-            Caminho completo do arquivo PNG gerado.
-        """
+        """Plota curvas de operações de dois algoritmos em escala log-log."""
         os.makedirs(diretorio_saida, exist_ok=True)
 
         fig, eixo = plt.subplots(figsize=(10, 6))
@@ -138,7 +108,7 @@ class GeradorGraficos:
             color=self.PALETA["curva_b"], linewidth=2, markersize=8, label=rotulo_b,
         )
 
-        # Curvas teóricas (pontilhadas) para referência
+        # Referências teóricas tracejadas
         intervalo = range(2, max(tamanhos) + 1)
         eixo.plot(
             intervalo,
@@ -176,8 +146,6 @@ class GeradorGraficos:
         print(f"  📊 Gráfico comparativo salvo em: {caminho}")
         return caminho
 
-    # ── Método auxiliar privado ──────────────────────────────────────
-
     @staticmethod
     def _plotar_stem(
         eixo: plt.Axes,
@@ -188,7 +156,6 @@ class GeradorGraficos:
         rotulo_y: str,
         titulo_subplot: str,
     ) -> None:
-        """Plota um stem plot padronizado em um eixo matplotlib."""
         marcadores, hastes, linha_base = eixo.stem(
             indices, valores, linefmt="-", markerfmt="o", basefmt="-"
         )
@@ -200,3 +167,50 @@ class GeradorGraficos:
         eixo.set_title(titulo_subplot)
         eixo.set_xticks(indices)
         eixo.grid(True, alpha=0.3)
+
+
+class ValidadorNumerico:
+    """
+    Compara coeficientes espectrais calculados com numpy.fft.fft para validação.
+    """
+
+    TOLERANCIA_PADRAO = 1e-10
+
+    def __init__(self, tolerancia: float = TOLERANCIA_PADRAO) -> None:
+        self._tolerancia = tolerancia
+
+    def validar(
+        self,
+        sequencia: list[float | int],
+        coeficientes_nossos: list[complex],
+        nome_algoritmo: str = "Implementação manual",
+    ) -> bool:
+        """Compara nossa lista de coeficientes contra a do NumPy."""
+        referencia_numpy = np.fft.fft(sequencia)
+        nossos_como_array = np.array(coeficientes_nossos)
+
+        coincide = bool(np.allclose(nossos_como_array, referencia_numpy, atol=self._tolerancia))
+
+        print(f"\n  Validação [{nome_algoritmo}] vs. numpy.fft.fft: ", end="")
+
+        if coincide:
+            print("✅ RESULTADOS IDÊNTICOS")
+        else:
+            print("❌ DIVERGÊNCIA DETECTADA")
+            self._imprimir_divergencias(coeficientes_nossos, referencia_numpy)
+
+        return coincide
+
+    def _imprimir_divergencias(
+        self,
+        nossos: list[complex],
+        referencia: np.ndarray,
+    ) -> None:
+        for k, (nosso, ref) in enumerate(zip(nossos, referencia)):
+            diferenca = abs(nosso - ref)
+            if diferenca > self._tolerancia:
+                print(
+                    f"    k={k}: calculado={nosso:.6f}, "
+                    f"numpy={ref:.6f}, "
+                    f"diferença={diferenca:.2e}"
+                )

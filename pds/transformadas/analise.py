@@ -1,41 +1,94 @@
 """
-Gerador de relatório textual para comparação entre algoritmos.
-
-Transforma um ResultadoComparacao em texto formatado para o terminal.
-Nenhuma lógica de cálculo acontece aqui.
+Análise comparativa de desempenho e corretude entre DFT e FFT.
 """
 
+from dataclasses import dataclass
 import math
-
 from tabulate import tabulate
 
-from pds.analise.transformadas.resultado_comparacao import ResultadoComparacao
+from .calculadoras import ProtocoloTransformada, ResultadoTransformada
+
+
+@dataclass(frozen=True)
+class ResultadoComparacao:
+    """
+    Agrupa os resultados de dois algoritmos para análise comparativa.
+    """
+
+    resultado_a: ResultadoTransformada
+    resultado_b: ResultadoTransformada
+    sequencia_original: tuple[float | int, ...]
+    resultados_identicos: bool
+    tolerancia_usada: float
+
+    @property
+    def aceleracao(self) -> float:
+        """Aceleração de A em relação a B (razão de tempo de execução)."""
+        denominador = max(self.resultado_b.tempo_segundos, 1e-15)
+        return self.resultado_a.tempo_segundos / denominador
+
+    @property
+    def razao_operacoes(self) -> float:
+        """Razão do total de operações de A em relação a B."""
+        denominador = max(self.resultado_b.total_operacoes, 1)
+        return self.resultado_a.total_operacoes / denominador
+
+
+class ComparadorAlgoritmos:
+    """
+    Executa dois algoritmos sobre a mesma entrada e mede suas diferenças.
+    """
+
+    TOLERANCIA_PADRAO = 1e-10
+
+    def __init__(
+        self,
+        algoritmo_a: ProtocoloTransformada,
+        algoritmo_b: ProtocoloTransformada,
+        tolerancia: float = TOLERANCIA_PADRAO,
+    ) -> None:
+        self._algoritmo_a = algoritmo_a
+        self._algoritmo_b = algoritmo_b
+        self._tolerancia = tolerancia
+
+    def _coeficientes_coincidem(self, coefs_a: list[complex], coefs_b: list[complex]) -> bool:
+        """Verifica se dois conjuntos de coeficientes são numericamente equivalentes."""
+        if len(coefs_a) != len(coefs_b):
+            return False
+
+        return all(
+            abs(coef_a - coef_b) <= self._tolerancia
+            for coef_a, coef_b in zip(coefs_a, coefs_b)
+        )
+
+    def comparar(self, sequencia: list[float | int]) -> ResultadoComparacao:
+        """Executa ambos os algoritmos e retorna as métricas comparativas."""
+        resultado_a = self._algoritmo_a.calcular(sequencia)
+        resultado_b = self._algoritmo_b.calcular(sequencia)
+
+        coincide = self._coeficientes_coincidem(
+            resultado_a.coeficientes,
+            resultado_b.coeficientes,
+        )
+
+        return ResultadoComparacao(
+            resultado_a=resultado_a,
+            resultado_b=resultado_b,
+            sequencia_original=tuple(sequencia),
+            resultados_identicos=coincide,
+            tolerancia_usada=self._tolerancia,
+        )
 
 
 class GeradorRelatorio:
     """
     Formata e imprime o relatório comparativo de dois algoritmos.
-
-    Produz tabelas de:
-    - Coeficientes espectrais (DFT vs FFT)
-    - Contagem de operações (real vs teórica)
-    - Tempo de execução e aceleração
-    - Complexidade computacional
-    - Verificação de corretude
     """
 
     LARGURA_SEPARADOR = 70
 
     def gerar(self, comparacao: ResultadoComparacao) -> str:
-        """
-        Gera o relatório completo como string.
-
-        Args:
-            comparacao: Resultado produzido pelo ComparadorAlgoritmos.
-
-        Returns:
-            String multilinha com o relatório formatado.
-        """
+        """Gera o relatório completo como string."""
         N = comparacao.resultado_a.tamanho
         sequencia = list(comparacao.sequencia_original)
         sep = "═" * self.LARGURA_SEPARADOR
@@ -67,10 +120,7 @@ class GeradorRelatorio:
         """Imprime o relatório diretamente no terminal."""
         print(self.gerar(comparacao))
 
-    # ── Seções privadas ──────────────────────────────────────────────
-
     def _secao_coeficientes(self, comparacao: ResultadoComparacao) -> str:
-        """Tabela com os coeficientes espectrais dos dois algoritmos."""
         N = comparacao.resultado_a.tamanho
         cabecalhos = [
             "k",
@@ -96,7 +146,6 @@ class GeradorRelatorio:
         )
 
     def _secao_operacoes(self, comparacao: ResultadoComparacao) -> str:
-        """Tabela comparando operações reais versus teóricas."""
         N = comparacao.resultado_a.tamanho
         log2N = int(math.log2(N)) if N > 1 else 0
 
@@ -143,7 +192,6 @@ class GeradorRelatorio:
         )
 
     def _secao_tempo(self, comparacao: ResultadoComparacao) -> str:
-        """Tabela de tempo de execução e aceleração."""
         res_a = comparacao.resultado_a
         res_b = comparacao.resultado_b
         linhas = [
@@ -157,7 +205,6 @@ class GeradorRelatorio:
         )
 
     def _secao_complexidade(self, comparacao: ResultadoComparacao) -> str:
-        """Tabela de complexidade computacional teórica."""
         N = comparacao.resultado_a.tamanho
         log2N = int(math.log2(N)) if N > 1 else 0
         N_log2N = N * log2N
@@ -181,7 +228,6 @@ class GeradorRelatorio:
         )
 
     def _secao_corretude(self, comparacao: ResultadoComparacao) -> str:
-        """Informa se os coeficientes dos dois algoritmos coincidem."""
         icone = "✅ IDÊNTICOS" if comparacao.resultados_identicos else "❌ DIVERGÊNCIA"
         mensagem = (
             f"    Coeficientes idênticos (tolerância: {comparacao.tolerancia_usada})."

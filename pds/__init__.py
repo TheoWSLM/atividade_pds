@@ -1,38 +1,64 @@
 """
-Pacote principal do projeto PDS.
+Pacote principal do projeto PDS (Processamento Digital de Sinais).
 
-Expõe as classes públicas de todas as subcamadas.
+Expõe a API pública organizada por funcionalidades: transformadas, janelas e filtros.
 """
 
-from .dominio import (
+from .transformadas import (
     ProtocoloTransformada,
     ResultadoTransformada,
     CalculadoraDFT,
     CalculadoraFFT,
     DecomposicaoButterfly,
-)
-from .analise import (
     ComparadorAlgoritmos,
     ResultadoComparacao,
     GeradorRelatorio,
-)
-from .visualizacao import (
     GeradorGraficos,
     ValidadorNumerico,
 )
+from .janelas import (
+    ProtocoloJanela,
+    JanelaRetangular,
+    JanelaTriangular,
+    JanelaHann,
+    JanelaHamming,
+    JanelaBlackman,
+    GeradorSinais,
+    AnalisadorJanelas,
+    GeradorGraficosJanelas,
+)
+from .filtros import (
+    FiltroFIR,
+    ProjetistaFiltroFIR,
+    AnalisadorFiltros,
+    GeradorGraficosFiltros,
+)
 
 __all__ = [
-    # Domínio
+    # Transformadas
     "ProtocoloTransformada",
     "ResultadoTransformada",
     "CalculadoraDFT",
     "CalculadoraFFT",
     "DecomposicaoButterfly",
-    # Análise
     "ComparadorAlgoritmos",
     "ResultadoComparacao",
     "GeradorRelatorio",
-    # Visualização
     "GeradorGraficos",
     "ValidadorNumerico",
+    # Janelas
+    "ProtocoloJanela",
+    "JanelaRetangular",
+    "JanelaTriangular",
+    "JanelaHann",
+    "JanelaHamming",
+    "JanelaBlackman",
+    "GeradorSinais",
+    "AnalisadorJanelas",
+    "GeradorGraficosJanelas",
+    # Filtros
+    "FiltroFIR",
+    "ProjetistaFiltroFIR",
+    "AnalisadorFiltros",
+    "GeradorGraficosFiltros",
 ]

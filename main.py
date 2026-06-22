@@ -14,8 +14,7 @@ Uso:
 
 import argparse
 
-from pds.dominio import CalculadoraDFT, CalculadoraFFT
-from pds.visualizacao import GeradorGraficos
+from pds.transformadas import CalculadoraDFT, CalculadoraFFT, GeradorGraficos
 
 
 def exibir_banner() -> None:
@@ -83,14 +82,24 @@ def gerar_grafico_comparativo_complexidade() -> None:
 
 def main() -> None:
     analisador = argparse.ArgumentParser(
-        description="Atividade de PDS — Cálculo de DFT e FFT",
+        description="Atividade de PDS — Transformadas, Janelamento e Filtros FIR",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Exemplos:
   python main.py           Executa todos os exercícios
+  python main.py --ex1     Apenas Exercício 1 (Janelamento, N=512)
+  python main.py --ex2     Apenas Exercício 2 (Filtro FIR PB, M=60)
   python main.py --ex3     Apenas Exercício 3 (DFT/FFT, N=4)
   python main.py --ex4     Apenas Exercício 4 (FFT, N=8)
         """,
+    )
+    analisador.add_argument(
+        "--ex1", action="store_true",
+        help="Executar apenas o Exercício 1 (Janelamento e Espectros)"
+    )
+    analisador.add_argument(
+        "--ex2", action="store_true",
+        help="Executar apenas o Exercício 2 (Filtro FIR Passa-Baixas)"
     )
     analisador.add_argument(
         "--ex3", action="store_true",
@@ -102,9 +111,17 @@ Exemplos:
     )
 
     argumentos = analisador.parse_args()
-    executar_tudo = not argumentos.ex3 and not argumentos.ex4
+    executar_tudo = not (argumentos.ex1 or argumentos.ex2 or argumentos.ex3 or argumentos.ex4)
 
     exibir_banner()
+
+    if argumentos.ex1 or executar_tudo:
+        from exercicios.exercicio1 import executar as executar_ex1
+        executar_ex1()
+
+    if argumentos.ex2 or executar_tudo:
+        from exercicios.exercicio2 import executar as executar_ex2
+        executar_ex2()
 
     if argumentos.ex3 or executar_tudo:
         from exercicios.exercicio3 import executar as executar_ex3

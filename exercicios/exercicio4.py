@@ -11,8 +11,12 @@ Objetivos:
 
 import math
 
-from pds.dominio import CalculadoraFFT, DecomposicaoButterfly
-from pds.visualizacao import GeradorGraficos, ValidadorNumerico
+from pds.transformadas import (
+    CalculadoraFFT,
+    DecomposicaoButterfly,
+    GeradorGraficos,
+    ValidadorNumerico,
+)
 
 
 def executar() -> None:

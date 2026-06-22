@@ -13,9 +13,14 @@ Objetivos:
 
 import math
 
-from pds.dominio import CalculadoraDFT, CalculadoraFFT
-from pds.analise import ComparadorAlgoritmos, GeradorRelatorio
-from pds.visualizacao import GeradorGraficos, ValidadorNumerico
+from pds.transformadas import (
+    CalculadoraDFT,
+    CalculadoraFFT,
+    ComparadorAlgoritmos,
+    GeradorRelatorio,
+    GeradorGraficos,
+    ValidadorNumerico,
+)
 
 
 def executar() -> None:
