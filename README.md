@@ -36,14 +36,61 @@ Essa organização garante **Alta Coesão** e **Baixo Acoplamento**, facilitando
 
 ---
 
+## 📥 Como Clonar e Configurar
+
+Para clonar o repositório e acessar a pasta do projeto:
+
+```bash
+git clone https://github.com/TheoWSLM/atividade_pds.git
+cd atividade_pds
+```
+
 ## 🚀 Como Executar
 
 ### Pré-requisitos
 
-*   Python 3.10+
-*   Gerenciador `make`
+*   Python 3.10 ou superior
+*   Gerenciador `make` (opcional, mas recomendado)
 
-### Comandos Disponíveis via `make`
+### Execução via `make` (Recomendada)
+
+O `Makefile` gerencia a criação do ambiente virtual `.venv`, a instalação das dependências e a execução automática.
+
+```bash
+# Executar todos os exercícios de uma vez (inclui criação do ambiente e dependências)
+make executar
+
+# Executar apenas o Exercício 1 (Janelamento Espectral)
+make ex1
+
+# Executar apenas o Exercício 2 (Projeto de Filtro FIR Passa-Baixas)
+make ex2
+
+# Executar os testes de validação numérica contra o NumPy
+make validar
+```
+
+### Execução manual (alternativa sem `make`)
+
+Caso prefira configurar e executar manualmente:
+
+```bash
+# Criar e ativar o ambiente virtual
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Instalar dependências
+pip install -r requirements.txt
+
+# Executar os exercícios principais
+python3 main.py --ex1
+python3 main.py --ex2
+
+# Rodar scripts de validação
+python3 validar.py
+```
+
+### Comandos Adicionais do Makefile
 
 ```bash
 # Executar TODOS os exercícios (cria o virtualenv automaticamente)
